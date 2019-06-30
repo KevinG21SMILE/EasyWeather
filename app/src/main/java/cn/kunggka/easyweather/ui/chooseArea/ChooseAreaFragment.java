@@ -1,7 +1,10 @@
 package cn.kunggka.easyweather.ui.chooseArea;
 
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,11 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import cn.kunggka.easyweather.MainActivity;
+import cn.kunggka.easyweather.R;
 import cn.kunggka.easyweather.R2;
 import cn.kunggka.easyweather.base.BaseFragment;
 import cn.kunggka.easyweather.db.City;
 import cn.kunggka.easyweather.db.Country;
 import cn.kunggka.easyweather.db.Province;
+import cn.kunggka.easyweather.ui.weather.WeatherActivity;
 import cn.kunggka.easyweather.util.ConstantUtil;
 import cn.kunggka.easyweather.util.LogUtil;
 
@@ -61,14 +67,7 @@ public class ChooseAreaFragment extends BaseFragment implements ChooseAreaContra
         return new ChooseAreaFragment();
     }
     
-/*    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R2.layout.choose_area, container, false);
-        listView = view.findViewById(R2.id.list_view);
-        return view;
-    }*/
-    
+    @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -84,6 +83,20 @@ public class ChooseAreaFragment extends BaseFragment implements ChooseAreaContra
                 } else if (currenLevel == ConstantUtil.LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCountries(selectedCity);
+                } else if (currenLevel == ConstantUtil.LEVEL_COUNTRY) {
+                    String weatherId = countryList.get(position).getWeatherId();
+                    if(getActivity() instanceof MainActivity){
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if(getActivity() instanceof WeatherActivity){
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.refreshLayout.setRefreshing(true);
+                        activity.mPresenter.requestWeather(weatherId);
+                    }
+                    
                 }
             }
         });

@@ -19,6 +19,16 @@ public class MainActivity extends BaseActivity {
     }
     
     @Override
+    protected void init() {
+    
+    }
+    
+    @Override
+    public void showStatusBar() {
+    
+    }
+    
+    @Override
     public int layoutId() {
         return R.layout.activity_main;
     }

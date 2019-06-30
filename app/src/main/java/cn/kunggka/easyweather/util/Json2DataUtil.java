@@ -3,6 +3,9 @@ package cn.kunggka.easyweather.util;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +13,7 @@ import org.json.JSONObject;
 import cn.kunggka.easyweather.db.City;
 import cn.kunggka.easyweather.db.Country;
 import cn.kunggka.easyweather.db.Province;
+import cn.kunggka.easyweather.model.Weather;
 
 public class Json2DataUtil {
     private static String Tag = Json2DataUtil.class.getSimpleName().substring(0,10);
@@ -74,5 +78,18 @@ public class Json2DataUtil {
             }
         }
         return false;
+    }
+    
+    public static Weather handleWeatherResponse(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.get(0).toString();
+            Weather weather = new GsonBuilder().create().fromJson(weatherContent, Weather.class);
+            return weather;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
